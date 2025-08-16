@@ -1,4 +1,4 @@
-<aside x-transition class="main-sidebar sidebar-dark-primary elevation-4">
+<aside x-transition class="main-sidebar sidebar-dark-warning elevation-4">
     <a wire:navigate href="/dashboard" class="brand-link">
         @php
             $logo = App\Models\Setting::where('id', 1)->first();

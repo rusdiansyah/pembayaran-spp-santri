@@ -1,5 +1,5 @@
 <div>
-    <div class="card card-warning card-outline">
+    <div class="card card-warning">
         <div class="card-header">
             <h3 class="card-title">Data Santri</h3>
             <div class="card-tools">
@@ -34,7 +34,7 @@
             </div>
     </div>
 
-    <div class="card card-primary card-outline">
+    <div class="card card-primary">
         <div class="card-header">
             <h3 class="card-title">{{ $title }} Detail</h3>
 

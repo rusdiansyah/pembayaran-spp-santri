@@ -1,10 +1,10 @@
 <div>
-    <div class="card card-primary card-outline">
+    <div class="card card-primary">
         <div class="card-header">
             <h3 class="card-title">{{ $title }} Table</h3>
 
             <div class="card-tools">
-                <button type="button" class="btn btn-sm btn-primary" wire:click="addPost" data-toggle="modal"
+                <button type="button" class="btn btn-sm btn-warning" wire:click="addPost" data-toggle="modal"
                     data-target="#modalForm">
                     <i class="fas fa-plus"></i>
                     Tambah

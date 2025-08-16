@@ -1,5 +1,5 @@
 <div>
-    <div class="card card-primary card-outline">
+    <div class="card card-primary">
         <div class="card-header">
             <h5 class="m-0">Halaman Admin</h5>
         </div>

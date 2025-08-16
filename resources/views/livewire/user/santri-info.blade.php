@@ -1,6 +1,6 @@
 <div>
 
-    <div class="card card-primary card-outline">
+    <div class="card card-info">
         <div class="card-header">
             <h3 class="card-title">{{ $title }}</h3>
         </div>

@@ -1,5 +1,5 @@
 <div>
-    <div class="card card-warning card-outline">
+    <div class="card card-info">
         <div class="card-header">
             <h3 class="card-title">Data Santri</h3>
             <div class="card-tools">

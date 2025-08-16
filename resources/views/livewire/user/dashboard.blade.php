@@ -1,5 +1,5 @@
 <div>
-    <div class="card card-primary card-outline">
+    <div class="card card-info">
         <div class="card-header">
             <h5 class="m-0">Halaman User</h5>
         </div>
