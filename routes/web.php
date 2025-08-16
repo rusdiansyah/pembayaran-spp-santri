@@ -20,6 +20,7 @@ use App\Livewire\TagihanList;
 use App\Livewire\TahunAjaranList;
 use App\Livewire\User;
 use App\Livewire\User\Dashboard as UserDashboard;
+use App\Livewire\User\PembayaranCreate as UserPembayaranCreate;
 use App\Livewire\User\PembayaranList as UserPembayaranList;
 use App\Livewire\User\TagihanList as UserTagihanList;
 use Illuminate\Support\Facades\Auth;
@@ -56,6 +57,7 @@ Route::group(['middleware' => ['auth', 'checkrole:Santri']], function () {
     Route::get('user/dashboard', UserDashboard::class)->name('user.dashboard');
     Route::get('user/tagihanList', UserTagihanList::class)->name('userTagihanList');
     Route::get('user/pembayaranList', UserPembayaranList::class)->name('userPembayaranList');
+    Route::get('user/pembayaranCreate', UserPembayaranCreate::class)->name('userPembayaranCreate');
 });
 
 Route::group(['middleware' => ['auth']], function () {

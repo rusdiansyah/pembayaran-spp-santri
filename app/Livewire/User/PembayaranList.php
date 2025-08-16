@@ -30,4 +30,8 @@ class PembayaranList extends Component
             'data' => $data
         ]);
     }
+    public function addPost()
+    {
+        return $this->redirectRoute('userPembayaranCreate');
+    }
 }

@@ -18,6 +18,7 @@ class PembayaranList extends Component
     #[Title('Pembayaran')]
     public $title = 'Pembayaran';
     public $paginate = 10;
+    public $isValid = [];
     public $search;
     public $filterTahunAjaran, $filterJenisTagihan, $filterPeriode;
     public function mount()
@@ -64,6 +65,10 @@ class PembayaranList extends Component
             ->latest()
             ->with(['santri', 'detail'])
             ->paginate($this->paginate);
+        foreach($data as $row)
+        {
+            $this->isValid[$row->id] = (bool) $row->isValid ?? '';
+        }
         return view('livewire.pembayaran-list', [
             'data' => $data
         ]);
@@ -100,5 +105,15 @@ class PembayaranList extends Component
             ]);
             return false;
         }
+    }
+
+    public function saveValid($id)
+    {
+        // dd($this->isValid[$id]);
+        Pembayaran::where('id',$id)
+        ->update([
+            'isValid' => (bool) $this->isValid[$id],
+        ]);
+        // dd($id);
     }
 }

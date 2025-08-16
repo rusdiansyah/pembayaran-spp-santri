@@ -1,49 +1,47 @@
 <?php
 
-namespace App\Livewire;
+namespace App\Livewire\User;
 
 use App\Models\Pembayaran;
 use App\Models\PembayaranDetail;
 use App\Models\Santri;
 use App\Models\Tagihan;
+use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Title;
 use Livewire\Component;
-use PhpParser\Node\Stmt\TryCatch;
+use Livewire\WithFileUploads;
 
 class PembayaranCreate extends Component
 {
+    use WithFileUploads;
     #[Title('Pembayaran')]
     public $title = 'Pembayaran';
-    public $santriId, $nisn, $kelas, $jenisBayar, $totalBayar = 0;
+    public $santriId,$nama, $nisn, $kelas, $jenisBayar, $totalBayar = 0;
+    public $buktiBayar;
     public $sisaBayar = [];
     public $bayar = [];
     public function mount()
     {
         $this->title;
-        $this->santriId = '';
-        $this->jenisBayar = 'Cash';
-    }
+        $santri = Santri::where('user_id', Auth::user()->id)->first();
+        $this->santriId = $santri->id ?? '';
+        $this->nama = $santri->nama ?? '';
+        $this->nisn = $santri->nisn ?? '';
+        $this->kelas = $santri->kelas->nama ?? '';
 
-    #[Computed()]
-    public function listSantri()
-    {
-        return Santri::orderBy('nisn')->pluck('nama', 'id');
+        $this->jenisBayar = 'Cash';
     }
     #[Computed()]
     public function listJenisBayar()
     {
         return [
-            'Cash' => 'Cash',
             'Transfer' => 'Transfer',
-            // 'QRIS' => 'QRIS',
-            // 'VA' => 'VA',
         ];
     }
     public function render()
     {
         $this->sisaBayar = [];
-        // $this->bayar = [];
         $data = Tagihan::where('santri_id', $this->santriId)
             ->orderBy('periode')
             ->get()
@@ -52,42 +50,35 @@ class PembayaranCreate extends Component
                     'id_tagihan' => $tagihan->id,
                     'periode' => $tagihan->periode,
                     'jenis_tagihan' => $tagihan->jenis_tagihan->nama,
-                    'jumlah' => $tagihan->jumlah - $this->totalDibayar($tagihan->id,$this->santriId),
+                    'jumlah' => $tagihan->jumlah - $this->totalDibayar($tagihan->id, $this->santriId),
                 ];
             });
         $this->updateTotalBayar();
-
-        return view('livewire.pembayaran-create', [
+        return view('livewire.user.pembayaran-create',[
             'data' => $data
         ]);
     }
-
+    public function updateTotalBayar()
+    {
+        $total = 0;
+        foreach ($this->bayar as $index => $row) {
+            $this->bayar[$index] = (int) $row;
+            $total += (int) $row;
+        }
+        $this->totalBayar = $total;
+    }
     public function totalDibayar($tagihan_id, $santri_id)
     {
-        $detail = PembayaranDetail::where('tagihan_id',$tagihan_id)
-        ->whereHas('pembayaran',function($q)use($santri_id){
-            return $q->where('santri_id', $santri_id);
-        })
-        ->get();
+        $detail = PembayaranDetail::where('tagihan_id', $tagihan_id)
+            ->whereHas('pembayaran', function ($q) use ($santri_id) {
+                return $q->where('santri_id', $santri_id);
+            })
+            ->get();
         $total = 0;
-        foreach($detail as $row)
-        {
-            $total +=(int)$row->jumlahBayar;
+        foreach ($detail as $row) {
+            $total += (int)$row->jumlahBayar;
         }
         return $total;
-    }
-
-    public function updatedSantriId($id)
-    {
-        // dd('item');
-        $data = Santri::where('id', $id)->first();
-        if ($data) {
-            $this->nisn = $data->nisn;
-            $this->kelas = $data->kelas->nama;
-        } else {
-            $this->nisn = '';
-            $this->kelas = '';
-        }
     }
 
     public function updateBayar()
@@ -95,15 +86,6 @@ class PembayaranCreate extends Component
         $this->updateTotalBayar();
     }
 
-    public function updateTotalBayar()
-    {
-        $total = 0;
-        foreach ($this->bayar as $index => $row) {
-            $this->bayar[$index] =(int) $row;
-            $total +=(int) $row;
-        }
-        $this->totalBayar = $total;
-    }
 
     public function save()
     {
@@ -114,10 +96,11 @@ class PembayaranCreate extends Component
             'nisn' => 'required',
             'kelas' => 'required',
             'jenisBayar' => 'required',
-            // 'totalBayar' => 'required|min:3',
+            'buktiBayar' => 'required|image',
         ]);
         $this->updateTotalBayar();
         $nomorBayar = $this->nisn . rand(1000, 9999);
+        $path = $this->buktiBayar->store('buktiBayar', 'public');
 
         if ($this->totalBayar > 0) {
             $pembayaran = new Pembayaran();
@@ -125,7 +108,8 @@ class PembayaranCreate extends Component
             $pembayaran->tanggal = date('Y-m-d');
             $pembayaran->santri_id = $this->santriId;
             $pembayaran->totalBayar = $this->totalBayar;
-            $pembayaran->isValid = (bool) true;
+            $pembayaran->isValid = (bool) false;
+            $pembayaran->buktiBayar = $path;
             $pembayaran->save();
             // dd($this->bayar);
             foreach ($this->bayar as $index => $row) {
@@ -143,12 +127,9 @@ class PembayaranCreate extends Component
                 'text' => 'Data berhasil disimpan',
                 'icon' => 'success',
             ]);
-            $this->santriId = '';
-            $this->nisn = '';
-            $this->kelas = '';
             $this->bayar = [];
             $this->totalBayar = 0;
-        }else{
+        } else {
             $this->dispatch('swal', [
                 'title' => 'Error!',
                 'text' => 'Anda belum mengisi pembayaran',

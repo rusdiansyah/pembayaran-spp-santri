@@ -20,36 +20,53 @@
                         <th>Bayar</th>
                         <th>Jumlah</th>
                         <th>Items</th>
+                        <th>Bukti</th>
+                        <th>Valid</th>
                         <th>Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
                     @php
-                        $tot=0;
+                        $tot = 0;
                     @endphp
                     @foreach ($data as $item)
-                        <tr>
+                        <tr class="{{ $item->isValid==0 ? 'text-danger' : '' }}">
                             <td>{{ $data->firstItem() + $loop->index }}</td>
-                            <td>{{ date("d-m-Y",strtotime($item->tanggal)) }}</td>
+                            <td>{{ date('d-m-Y', strtotime($item->tanggal)) }}</td>
                             <td>{{ $item->santri->nama }}</td>
                             <td>{{ $item->jenisBayar }}</td>
                             <td>{{ number_format($item->totalBayar) }}</td>
                             <td>{{ $item->detail->count() }}</td>
+                            <td>
+                                @if ($item->buktiBayar)
+                                <a href="{{ asset('storage/'.$item->buktiBayar) }}" target="_blank">
+                                    <img src="{{ asset('storage/'.$item->buktiBayar) }}" alt="{{ $item->id }}" width="50">
+                                </a>
+                                @endif
+                            </td>
+                            <td>
+                                <div class="form-group" wire:click="saveValid({{ $item->id }})">
+                                    <div class="custom-control custom-switch">
+                                        <input type="checkbox" class="custom-control-input" id="customSwitch{{ $item->id }}" wire:model="isValid.{{ $item->id }}" >
+                                        <label class="custom-control-label" for="customSwitch{{ $item->id }}"></label>
+                                    </div>
+                                </div>
+                            </td>
                             <td>
                                 {{-- <x-button-edit id="{{ $item->id }}" type="button" /> --}}
                                 <x-button-delete id="{{ $item->id }}" />
                             </td>
                         </tr>
                         @php
-                            $tot+=$item->totalBayar;
+                            $tot += $item->totalBayar;
                         @endphp
                     @endforeach
-                        <tr>
-                            <td colspan="4" class="text-right">Total</td>
-                            <td>{{ number_format($tot) }}</td>
-                            <td></td>
-                            <td></td>
-                        </tr>
+                    <tr>
+                        <td colspan="4" class="text-right">Total</td>
+                        <td>{{ number_format($tot) }}</td>
+                        <td></td>
+                        <td></td>
+                    </tr>
                 </tbody>
             </table>
         </div>
