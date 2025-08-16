@@ -64,9 +64,6 @@
             <p class="mb-1">
                 <a wire:navigate href="/forgot-password">Lupa Password</a>
             </p>
-            <p class="mb-0">
-                <a wire:navigate href="/register" class="text-center">Daftar</a>
-            </p>
         </div>
     </div>
 </div>

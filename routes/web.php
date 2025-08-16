@@ -27,7 +27,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', Login::class)->middleware('guest')->name('login');
-Route::get('/register', Register::class)->middleware('guest')->name('register');
+// Route::get('/register', Register::class)->middleware('guest')->name('register');
 Route::get('/forgot-password', LupaPassword::class)->middleware('guest')->name('forgot-password');
 
 Route::group(['middleware' => ['auth', 'checkrole:Admin']], function () {
